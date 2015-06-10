@@ -59,7 +59,7 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 
 # cleanup
 	RUN apt-get clean && \
-		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh /suhosin.key
+		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh /suhosin.key /etc/php5/fpm/conf.d/20-xdebug.ini
 
 # finalize
 	VOLUME ["/app/htdocs", "/app/logs", "/app/sessions", "/app/config"]

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-files=($(find /app/config -type f))
+files=($(find /app/config/php5 -type f))
 
 for source in "${files[@]}" 
 do
 	pattern="\.DS_Store"
-	target=${source/\/app\/config/\/etc}
+	target=${source/\/app\/config\/php5/\/etc\/php5}
 	
 	if [[ ! $target =~ $pattern ]]; then
 		if [[ -f $target ]]; then
@@ -19,5 +19,3 @@ done
 mkdir -p /app/htdocs
 mkdir -p /app/sessions
 mkdir -p /app/logs/php5
-
-# service php5-fpm start > /dev/null 2>&1
