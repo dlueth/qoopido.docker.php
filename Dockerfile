@@ -47,6 +47,10 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 			php5-memcached \
 			php5-suhosin-extension \
 			php5-xdebug
+			
+# generate locales
+	RUN cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local && \
+		locale-gen
 		
 # enable PHP5 suhosin extension
 	RUN ln -s /etc/php5/mods-available/suhosin.ini /etc/php5/fpm/conf.d/10-suhosin.ini
