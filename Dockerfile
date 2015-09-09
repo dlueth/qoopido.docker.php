@@ -53,7 +53,8 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 		locale-gen
 		
 # enable PHP5 suhosin extension
-	RUN ln -s /etc/php5/mods-available/suhosin.ini /etc/php5/fpm/conf.d/10-suhosin.ini
+	RUN ln -s /etc/php5/mods-available/suhosin.ini /etc/php5/fpm/conf.d/10-suhosin.ini && \
+		ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
 		
 # add default /app directory
 	ADD app /app

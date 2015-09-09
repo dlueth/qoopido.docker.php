@@ -1,6 +1,9 @@
 # Build container #
 ```
 docker build -t qoopido/php5 .
+
+// to test manually: docker run -itd --name php5 qoopido/php5
+// to enter a shell: docker exec -it php5 bash
 ```
 
 # Run container manually ... #
