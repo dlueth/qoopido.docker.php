@@ -1,9 +1,6 @@
 # Build container #
 ```
 docker build -t qoopido/php5 .
-
-// to test manually: docker run -itd --name php5 qoopido/php5
-// to enter a shell: docker exec -it php5 bash
 ```
 
 # Run container manually ... #
@@ -37,6 +34,8 @@ docker exec -i -t "php5" /bin/bash
 
 # Project specific configuration #
 Any files under ```/app/config/php5``` will be symlinked into the container's filesystem beginning at ```/etc/php5```. This can be used to overwrite the container's default php fpm configuration with a custom, project specific configuration. Beside adjusting the php.ini this can also be used to enable xDebug (which is disabled by default) with the following content in ```/app/config/php5/fpm/conf.d/20-xdebug.ini```
+
+If you need a custom shell script to be run on start (e.g. to set symlinks) you can do so by creating the file ```/app/config/php5/initialize.sh```.
 
 ```
 zend_extension=xdebug.so
