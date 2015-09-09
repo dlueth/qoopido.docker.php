@@ -17,11 +17,11 @@ do
 	fi
 done
 
-if [ -f $INIT ]
-then
-	 chmod +x $INIT && chmod 755 $INIT && ln -s $INIT /etc/my_init.d/99_initialize.sh
-fi
-
 mkdir -p /app/htdocs
 mkdir -p /app/sessions
 mkdir -p /app/logs/php5
+
+if [ -f $INIT ]
+then
+	 chmod +x $INIT && chmod 755 $INIT && eval $INIT;
+fi
