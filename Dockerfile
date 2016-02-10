@@ -25,8 +25,8 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 	RUN /configure.sh && \
 		chmod +x /etc/my_init.d/*.sh && \
 		chmod 755 /etc/my_init.d/*.sh && \
-		chmod +x /etc/service/php5/run && \
-		chmod 755 /etc/service/php5/run
+		chmod +x /etc/service/php55/run && \
+		chmod 755 /etc/service/php55/run
 		
 # add suhosin repository
 	RUN echo "deb http://repo.suhosin.org/ ubuntu-trusty main" >> /etc/apt/sources.list
@@ -35,6 +35,8 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 	
 # install packages
 	RUN apt-get update && \
+		apt-get -qy upgrade && \
+		apt-get -qy dist-upgrade && \
 		apt-get install -qy php5-fpm \
 			php5-common \
 			php5-json \
@@ -60,7 +62,7 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 	ADD app /app
 	RUN mkdir -p /app/htdocs && \
 		mkdir -p /app/sessions && \
-		mkdir -p /app/logs/php5
+		mkdir -p /app/logs/php55
 
 # cleanup
 	RUN apt-get clean && \
