@@ -20,7 +20,6 @@ project root
 ```
 php:
   image: qoopido/php55:latest
-  hostname: [hostname]
   ports:
    - "9000:9000"
   volumes:
