@@ -16,17 +16,6 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
     	usermod -G staff www-data && \
     	groupmod -g $(($BOOT2DOCKER_GID + 10000)) $(getent group $BOOT2DOCKER_GID | cut -d: -f1) && \
     	groupmod -g ${BOOT2DOCKER_GID} staff
-
-# configure defaults
-	ADD configure.sh /configure.sh
-	ADD config /config
-	RUN chmod +x /configure.sh && \
-		chmod 755 /configure.sh
-	RUN /configure.sh && \
-		chmod +x /etc/my_init.d/*.sh && \
-		chmod 755 /etc/my_init.d/*.sh && \
-		chmod +x /etc/service/php55/run && \
-		chmod 755 /etc/service/php55/run
 		
 # add suhosin repository
 	RUN echo "deb http://repo.suhosin.org/ ubuntu-trusty main" >> /etc/apt/sources.list
@@ -53,10 +42,24 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 # generate locales
 	RUN cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local && \
 		locale-gen
+
+# configure defaults
+	ADD configure.sh /configure.sh
+	ADD config /config
+	RUN chmod +x /configure.sh && \
+		chmod 755 /configure.sh
+	RUN /configure.sh && \
+		chmod +x /etc/my_init.d/*.sh && \
+		chmod 755 /etc/my_init.d/*.sh && \
+		chmod +x /etc/service/php55/run && \
+		chmod 755 /etc/service/php55/run
 		
-# enable PHP5 suhosin extension
+# enable extensions
 	RUN ln -s /etc/php5/mods-available/suhosin.ini /etc/php5/fpm/conf.d/10-suhosin.ini && \
 		ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
+
+# disable extensions
+	RUN rm -rf /etc/php5/fpm/conf.d/20-xdebug.ini
 		
 # add default /app directory
 	ADD app /app
@@ -66,7 +69,7 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 
 # cleanup
 	RUN apt-get clean && \
-		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh /suhosin.key /etc/php5/fpm/conf.d/20-xdebug.ini
+		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh /suhosin.key
 
 # finalize
 	VOLUME ["/app/htdocs", "/app/logs", "/app/sessions", "/app/config"]
