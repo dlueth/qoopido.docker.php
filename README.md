@@ -50,7 +50,6 @@ php5-mysqlnd
 php5-sqlite
 php5-apcu
 php5-memcached
-php5-suhosin-extension
 php5-xdebug
 ```
 

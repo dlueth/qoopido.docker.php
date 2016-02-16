@@ -16,11 +16,6 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
     	usermod -G staff www-data && \
     	groupmod -g $(($BOOT2DOCKER_GID + 10000)) $(getent group $BOOT2DOCKER_GID | cut -d: -f1) && \
     	groupmod -g ${BOOT2DOCKER_GID} staff
-		
-# add suhosin repository
-	RUN echo "deb http://repo.suhosin.org/ ubuntu-trusty main" >> /etc/apt/sources.list
-	ADD suhosin.key /suhosin.key
-	RUN sudo apt-key add suhosin.key
 	
 # install packages
 	RUN apt-get update && \
@@ -36,7 +31,6 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 			php5-sqlite \
 			php5-apcu \
 			php5-memcached \
-			php5-suhosin-extension \
 			php5-xdebug
 			
 # generate locales
@@ -55,8 +49,7 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 		chmod 755 /etc/service/php55/run
 		
 # enable extensions
-	RUN ln -s /etc/php5/mods-available/suhosin.ini /etc/php5/fpm/conf.d/10-suhosin.ini && \
-		ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
+	RUN ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
 
 # disable extensions
 	RUN rm -rf /etc/php5/fpm/conf.d/20-xdebug.ini
@@ -69,7 +62,7 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 
 # cleanup
 	RUN apt-get clean && \
-		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh /suhosin.key
+		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh
 
 # finalize
 	VOLUME ["/app/htdocs", "/app/logs", "/app/sessions", "/app/config"]
