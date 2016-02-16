@@ -16,7 +16,7 @@ project root
   - logs
 ```
 
-# Example docker_compose.yaml #
+# Example docker-compose.yaml #
 ```
 php:
   image: qoopido/php55:latest
