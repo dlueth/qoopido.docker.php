@@ -2,11 +2,12 @@
 
 down()
 {
-	local DOWN="/etc/php5/down.sh"
+	local DOWN="/app/config/down.sh"
 
 	if [ -f $DOWN ]
     then
-    	 chmod +x $DOWN && chmod 755 $DOWN && eval $DOWN;
+    	echo "    Running shutdown script /app/config/down.sh"
+		chmod +x $DOWN && chmod 755 $DOWN && eval $DOWN;
     fi
 
     exit
