@@ -1,3 +1,17 @@
 #!/bin/bash
 
+down()
+{
+	local DOWN="/etc/php5/down.sh"
+
+	if [ -f $DOWN ]
+    then
+    	 chmod +x $DOWN && chmod 755 $DOWN && eval $DOWN;
+    fi
+
+    exit
+}
+
+trap down SIGTERM
+
 exec /usr/sbin/php5-fpm -F > /dev/null 2>&1

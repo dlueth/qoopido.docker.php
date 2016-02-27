@@ -3,7 +3,7 @@ Like with my other containers I encourage you to follow a unified directory stru
 
 ```
 project root
-  - docker_compose.yaml
+  - docker-compose.yaml
   - config
     - php55
       - initialize.sh (if needed)
@@ -12,8 +12,10 @@ project root
         - conf.d
           - ...
   - htdocs
-  - sessions
-  - logs
+  - data
+    - php55
+      - sessions
+      - logs
 ```
 
 # Example docker-compose.yaml #
@@ -23,19 +25,17 @@ php:
   ports:
    - "9000:9000"
   volumes:
-   - ./config:/app/config
    - ./htdocs:/app/htdocs
-   - ./sessions:/app/sessions
-   - ./logs:/app/logs
+   - ./config/php55:/app/config
+   - ./data/php55:/app/data
 ```
 
 # Or start container manually #
 ```
 docker run -d -P -t -i -p 9000:9000 \
-	-v [local path to config]:/app/config \
 	-v [local path to htdocs]:/app/htdocs \
-	-v [local path to sessions]:/app/sessions \
-	-v [local path to logs]:/app/logs \
+	-v [local path to config]:/app/config \
+	-v [local path to data]:/app/data \
 	--name php qoopido/php55:latest
 ```
 
@@ -54,12 +54,12 @@ php5-xdebug
 ```
 
 # Configuration #
-Any files under ```/app/config/php55``` will be symlinked into the container's filesystem beginning at ```/etc/php5```. This can be used to overwrite the container's default php fpm configuration with a custom, project specific configuration.
+Any files under ```/app/config``` will be symlinked into the container's filesystem beginning at ```/etc/php5```. This can be used to overwrite the container's default php fpm configuration with a custom, project specific configuration.
 
-If you need a custom shell script to be run on start (e.g. to set symlinks) you can do so by creating the file ```/app/config/php55/initialize.sh```.
+If you need a custom shell script to be run on start or stop (e.g. to set symlinks) you can do so by creating the file ```/app/config/up.sh``` or ```/app/config/down.sh```.
 
 # XDebug #
-This container comes with XDebug pre-installed but disabled. To enable it just port ```9001:9001``` to your ```docker_compose.yaml``` or your shell command and create a file named ```/app/config/php55/fpm/conf.d/20-xdebug.ini``` with the following content:
+This container comes with XDebug pre-installed but disabled. To enable it just port ```9001:9001``` to your ```docker-compose.yaml``` or your shell command and create a file named ```/app/config/fpm/conf.d/20-xdebug.ini``` with the following content:
 
 ```
 zend_extension=xdebug.so

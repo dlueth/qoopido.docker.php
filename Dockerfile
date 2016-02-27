@@ -57,14 +57,15 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 # add default /app directory
 	ADD app /app
 	RUN mkdir -p /app/htdocs && \
-		mkdir -p /app/sessions && \
-		mkdir -p /app/logs/php55
+		mkdir -p /app/data/sessions && \
+		mkdir -p /app/data/logs && \
+		mkdir -p /app/config
 
 # cleanup
 	RUN apt-get clean && \
 		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh
 
 # finalize
-	VOLUME ["/app/htdocs", "/app/logs", "/app/sessions", "/app/config"]
+	VOLUME ["/app/htdocs", "/app/data", "/app/config"]
 	EXPOSE 9000
 	EXPOSE 9001
