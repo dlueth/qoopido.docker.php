@@ -15,4 +15,4 @@ down()
 
 trap down SIGTERM
 
-exec /usr/sbin/php5-fpm -F > /dev/null 2>&1
+exec /usr/sbin/php5-fpm -F > /dev/null 2>&1 & wait
