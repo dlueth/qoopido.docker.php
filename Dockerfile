@@ -1,44 +1,74 @@
-FROM phusion/baseimage:latest
+FROM qoopido/base:latest
 MAINTAINER Dirk Lüth <info@qoopido.com>
 
 # Initialize environment
 	CMD ["/sbin/my_init"]
 	ENV DEBIAN_FRONTEND noninteractive
 
-# based on dgraziotin/docker-osx-lamp
-	ENV DOCKER_USER_ID 501 
-	ENV DOCKER_USER_GID 20
-	ENV BOOT2DOCKER_ID 1000
-	ENV BOOT2DOCKER_GID 50
+# install language pack required to add PPA
+	RUN apt-get update \
+		&& apt-get install -qy language-pack-en-base \
+		&& locale-gen en_US.UTF-8
+	ENV LANG en_US.UTF-8
+	ENV LC_ALL en_US.UTF-8
 
-# Tweaks to give Apache/PHP write permissions to the app
-	RUN usermod -u ${BOOT2DOCKER_ID} www-data && \
-    	usermod -G staff www-data && \
-    	groupmod -g $(($BOOT2DOCKER_GID + 10000)) $(getent group $BOOT2DOCKER_GID | cut -d: -f1) && \
-    	groupmod -g ${BOOT2DOCKER_GID} staff
+# add PPA for PHP 7
+	RUN add-apt-repository ppa:ondrej/php
 	
 # install packages
-	RUN apt-get update && \
-		apt-get -qy upgrade && \
-		apt-get -qy dist-upgrade && \
-		apt-get install -qy php5-fpm \
-			php5-common \
-			php5-json \
-			php5-gd \
-			php5-curl \
-			php5-mcrypt \
-			php5-mysqlnd \
-			php5-sqlite \
-			php5-apcu \
-			php5-memcached \
-			php5-xdebug
-			
+	RUN apt-get update \
+		&& apt-get install -qy \
+			php5.5 \
+			php5.5-fpm \
+			php5.5-dev \
+			php5.5-cli \
+			php5.5-common \
+			php5.5-intl \
+			php5.5-bcmath \
+			php5.5-mbstring \
+			php5.5-soap \
+			php5.5-xml \
+			php5.5-zip \
+			php5.5-apcu \
+			php5.5-json \
+			php5.5-gd \
+			php5.5-curl \
+			php5.5-mcrypt \
+			php5.5-mysql \
+			php5.5-sqlite \
+			php-memcached
+
+
+#			apt-get install -qy php5-fpm \
+#            			php5-common \
+#            			php5-json \
+#            			php5-gd \
+#            			php5-curl \
+#            			php5-mcrypt \
+#            			php5-mysqlnd \
+#            			php5-sqlite \
+#            			php5-apcu \
+#            			php5-memcached \
+#            			php5-xdebug
+
+# enable extensions
+#	RUN ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
+
+# disable extensions
+#	RUN rm -rf /etc/php5/fpm/conf.d/20-xdebug.ini
+
 # generate locales
-	RUN cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local && \
-		locale-gen
+	RUN cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local \
+		&& locale-gen
+
+# install composer
+	RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+		&& php -r "if (hash_file('SHA384', 'composer-setup.php') === 'e115a8dc7871f15d853148a7fbac7da27d6c0030b848d9b3dc09e2a0388afed865e6a3d6b3c0fad45c48e2b5fc1196ae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+		&& php composer-setup.php \
+		&& php -r "unlink('composer-setup.php');"
 
 # configure defaults
-	ADD configure.sh /configure.sh
+	COPY configure.sh /
 	ADD config /config
 	RUN chmod +x /configure.sh && \
 		chmod 755 /configure.sh
@@ -49,21 +79,22 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 		chmod 755 /etc/service/php55/run
 		
 # enable extensions
-	RUN ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
 
 # disable extensions
-	RUN rm -rf /etc/php5/fpm/conf.d/20-xdebug.ini
-		
+
 # add default /app directory
 	ADD app /app
 	RUN mkdir -p /app/htdocs && \
-		mkdir -p /app/data/sessions && \
-		mkdir -p /app/data/logs && \
-		mkdir -p /app/config
+    	mkdir -p /app/data/sessions && \
+    	mkdir -p /app/data/logs && \
+    	mkdir -p /app/config
 
 # cleanup
-	RUN apt-get clean && \
-		rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /configure.sh
+	RUN apt-get -qy autoremove \
+		&& deborphan | xargs apt-get -qy remove --purge \
+		&& rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* /usr/share/doc/* /usr/share/man/* /tmp/* /var/tmp/* /configure.sh \
+		&& find /var/log -type f -name '*.gz' -exec rm {} + \
+		&& find /var/log -type f -exec truncate -s 0 {} +
 
 # finalize
 	VOLUME ["/app/htdocs", "/app/data", "/app/config"]
