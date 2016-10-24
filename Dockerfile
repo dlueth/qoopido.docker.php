@@ -38,25 +38,6 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 			php5.5-sqlite \
 			php-memcached
 
-
-#			apt-get install -qy php5-fpm \
-#            			php5-common \
-#            			php5-json \
-#            			php5-gd \
-#            			php5-curl \
-#            			php5-mcrypt \
-#            			php5-mysqlnd \
-#            			php5-sqlite \
-#            			php5-apcu \
-#            			php5-memcached \
-#            			php5-xdebug
-
-# enable extensions
-#	RUN ln -s /etc/php5/mods-available/mcrypt.ini /etc/php5/fpm/conf.d/20-mcrypt.ini
-
-# disable extensions
-#	RUN rm -rf /etc/php5/fpm/conf.d/20-xdebug.ini
-
 # generate locales
 	RUN cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local \
 		&& locale-gen
