@@ -5,6 +5,17 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 	CMD ["/sbin/my_init"]
 	ENV DEBIAN_FRONTEND noninteractive
 
+# configure defaults
+	COPY configure.sh /
+	ADD config /config
+	RUN chmod +x /configure.sh \
+		&& chmod 755 /configure.sh
+	RUN /configure.sh \
+		&& chmod +x /etc/my_init.d/*.sh \
+		&& chmod 755 /etc/my_init.d/*.sh \
+		&& chmod +x /etc/service/php55/run \
+		&& chmod 755 /etc/service/php55/run
+
 # install language pack required to add PPA
 	RUN apt-get update \
 		&& apt-get install -qy language-pack-en-base \
@@ -47,17 +58,6 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 		&& php -r "if (hash_file('SHA384', 'composer-setup.php') === 'e115a8dc7871f15d853148a7fbac7da27d6c0030b848d9b3dc09e2a0388afed865e6a3d6b3c0fad45c48e2b5fc1196ae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
 		&& php composer-setup.php \
 		&& php -r "unlink('composer-setup.php');"
-
-# configure defaults
-	COPY configure.sh /
-	ADD config /config
-	RUN chmod +x /configure.sh && \
-		chmod 755 /configure.sh
-	RUN /configure.sh && \
-		chmod +x /etc/my_init.d/*.sh && \
-		chmod 755 /etc/my_init.d/*.sh && \
-		chmod +x /etc/service/php55/run && \
-		chmod 755 /etc/service/php55/run
 		
 # enable extensions
 
@@ -65,10 +65,10 @@ MAINTAINER Dirk Lüth <info@qoopido.com>
 
 # add default /app directory
 	ADD app /app
-	RUN mkdir -p /app/htdocs && \
-    	mkdir -p /app/data/sessions && \
-    	mkdir -p /app/data/logs && \
-    	mkdir -p /app/config
+	RUN mkdir -p /app/htdocs \
+    	&& mkdir -p /app/data/sessions \
+    	&& mkdir -p /app/data/logs \
+    	&& mkdir -p /app/config
 
 # cleanup
 	RUN apt-get -qy autoremove \
